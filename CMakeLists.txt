@@ -13,3 +13,4 @@ project(ObjExamplesALL)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/SimpleObj)
 add_subdirectory(${PROJECT_SOURCE_DIR}/Triangulate)
+add_subdirectory(${PROJECT_SOURCE_DIR}/PolySplit)
