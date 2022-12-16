@@ -49,8 +49,20 @@ int main(int argc, char **argv)
         center+=verts[v];
       }
       center/=f.m_vert.size();
+
+      ngl::Vec3 newUV;
+      size_t currentUVIndex=f.m_uv.size();
+      for(auto u : f.m_uv)
+      {
+        newUV+=uv[u];
+      }
+      newUV/=f.m_vert.size();
+    
+
       std::cout<<"center is "<<center<<'\n';
+      std::cout<<"New UV is "<<newUV<<'\n';
       newMesh.addVertex(center);
+      newMesh.addUV(newUV);
       // Now we are going to grab adjacent face index values and form triangles with the center
       for(size_t i=0; i<f.m_vert.size(); ++i)
       {
@@ -65,7 +77,7 @@ int main(int argc, char **argv)
         // vert 3
         fn.m_vert.push_back(currentVertIndex);
         fn.m_norm.push_back(f.m_norm[i+1]); // use same norm and uv
-        fn.m_uv.push_back(f.m_uv[i+1]);
+        fn.m_uv.push_back(currentUVIndex);
         newMesh.addFace(fn);
       }
       // Now add first to last
