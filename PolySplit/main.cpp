@@ -43,7 +43,7 @@ int main(int argc, char **argv)
   for (auto f : faces)
   {
       ngl::Vec3 center;
-      size_t currentVertIndex=f.m_vert.size();
+      size_t currentVertIndex=newMesh.getNumVerts();
       for(auto v : f.m_vert)
       {
         center+=verts[v];
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
       center/=f.m_vert.size();
 
       ngl::Vec3 newUV;
-      size_t currentUVIndex=f.m_uv.size();
+      size_t currentUVIndex=newMesh.getNumTexCords();
       for(auto u : f.m_uv)
       {
         newUV+=uv[u];
