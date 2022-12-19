@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     }
     newUV/=f.m_vert.size();
     newMesh.addUV(newUV);
-    // now we are going to find the half way points of the trangle
+    // now we are going to find the half way points of the triangle
     // for ease let's extract the points we need.
     auto p1Index=f.m_vert[0];
     auto p1=verts[p1Index];
@@ -95,90 +95,30 @@ int main(int argc, char **argv)
     newMesh.addUV(huv1); // currentUVIndex+1
     newMesh.addUV(huv2); // currentUVIndex+2
     newMesh.addUV(huv3); // currentUVIndex+3
-    
-    // now we need to add 6 new tri faces we assume they all
-    // have the same normal as triangular
-    ngl::Face newFace;
-    newFace.m_vert.push_back(p1Index);
-    newFace.m_vert.push_back(currentVertIndex+1);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(uv1Index);
-    newFace.m_uv.push_back(currentUVIndex+1);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
-    // reset for face 2
-    newFace.m_vert.clear();
-    newFace.m_uv.clear();
-    newFace.m_norm.clear();
-    newFace.m_vert.push_back(currentVertIndex+1);
-    newFace.m_vert.push_back(p2Index);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(currentUVIndex+1);
-    newFace.m_uv.push_back(uv2Index);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
-    // reset for face 3
-    newFace.m_vert.clear();
-    newFace.m_uv.clear();
-    newFace.m_norm.clear();
-    newFace.m_vert.push_back(p2Index);
-    newFace.m_vert.push_back(currentVertIndex+2);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(uv2Index);
-    newFace.m_uv.push_back(currentUVIndex+2);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
-    // reset for face 4
-    newFace.m_vert.clear();
-    newFace.m_uv.clear();
-    newFace.m_norm.clear();
-    newFace.m_vert.push_back(currentVertIndex+2);
-    newFace.m_vert.push_back(p3Index);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(currentUVIndex+2);
-    newFace.m_uv.push_back(uv3Index);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
-    // reset for face 5
-    newFace.m_vert.clear();
-    newFace.m_uv.clear();
-    newFace.m_norm.clear();
-    newFace.m_vert.push_back(p3Index);
-    newFace.m_vert.push_back(currentVertIndex+3);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(uv3Index);
-    newFace.m_uv.push_back(currentUVIndex+3);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
-    // reset for face 6
-    newFace.m_vert.clear();
-    newFace.m_uv.clear();
-    newFace.m_norm.clear();
-    newFace.m_vert.push_back(currentVertIndex+3);
-    newFace.m_vert.push_back(p1Index);
-    newFace.m_vert.push_back(currentVertIndex);
-    newFace.m_uv.push_back(currentUVIndex+3);
-    newFace.m_uv.push_back(uv1Index);
-    newFace.m_uv.push_back(currentUVIndex);
-    newFace.m_norm.push_back(f.m_norm[0]);
-    newFace.m_norm.push_back(f.m_norm[1]);
-    newFace.m_norm.push_back(f.m_norm[2]);
-    newMesh.addFace(newFace);
+    // create a lookup table for our index values 
+    std::array<size_t,7> vertIndices={
+      p1Index,currentVertIndex+1,p2Index,currentVertIndex+2,
+      p3Index,currentVertIndex+3,p1Index
+     };
+    std::array<size_t,7> uvIndices={
+      uv1Index,currentUVIndex+1,uv2Index,currentUVIndex+2,
+      uv3Index,currentUVIndex+3,uv1Index
+    };
+    // for each index in the table form a new tri face
+    for(size_t i=0; i<6; ++i)
+    {
+      ngl::Face newFace;
+      newFace.m_vert.push_back(vertIndices[i]);
+      newFace.m_vert.push_back(vertIndices[i+1]);
+      newFace.m_vert.push_back(currentVertIndex); // center
+      newFace.m_uv.push_back(uvIndices[i]);
+      newFace.m_uv.push_back(uvIndices[i+1]);
+      newFace.m_uv.push_back(currentUVIndex); // center
+      newFace.m_norm.push_back(f.m_norm[0]);
+      newFace.m_norm.push_back(f.m_norm[1]);
+      newFace.m_norm.push_back(f.m_norm[2]);
+      newMesh.addFace(newFace);
+    }
   }
 
   newMesh.save("triTesselated.obj");
